@@ -23,6 +23,9 @@ function get_left_time(nEndTime)
 	if nLeftTime < 0 then
 		return
 	end
+	local szScript = "\\script\\autoingame\\auto_functions.lua"
+	Require(szScript)
+	DynamicExecute(szScript, "test_function_2")
 	local nHourMinute = floor(nLeftTime / 60)
 	local nSec = mod(nLeftTime, 60)
 	local nHour = floor(nHourMinute/60)
