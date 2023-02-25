@@ -1,0 +1,17 @@
+*.dll
+*.exe
+*.log
+*.dmp
+*.ico
+data/*
+pic/*
+Auto/*
+JxRep/*
+UserData/*
+music/*
+maps/*
+Logs/*
+spr*
+ui_*
+Vn.fon
+lang/*
