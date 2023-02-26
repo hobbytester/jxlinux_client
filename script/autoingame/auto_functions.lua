@@ -19,18 +19,8 @@ function test_function_2()
 	end
 
 	if count == 1 then -- Delay 1 giay
-		-- Danh quanh diem
-		x_cor = 193
-		y_cor = 204
-		SetOriginPos(x_cor*8*32, y_cor*16*32)
-		SetActiveRange(500)
-		if (KeepActiveRange() == 1) then
-			auto_attack_enabled = 0
-			SetTarget(0)
-			NpcChat(GetSelfIndex(), "Xa qu¸, quay l¹i!")
-		else
-			auto_attack_enabled = 1
-		end
+		x_cor = 193; y_cor = 204
+		auto_attack_enabled = go_to_coordinate(x_cor, y_cor)
 	end
 
 	auto_switch_skills_A_and_S(count)
@@ -61,4 +51,15 @@ function auto_switch_skills_A_and_S(timer_count)
 	elseif timer_count == 11 then -- 50% cua 18 offset 2  = 0.5s
 		ShortcutSkill(4) -- chu S
 	end
+end
+
+function go_to_coordinate(x, y)
+	SetOriginPos(x*8*32, y*16*32)
+	SetActiveRange(500)
+	if (KeepActiveRange() == 1) then
+		SetTarget(0)
+		NpcChat(GetSelfIndex(), "Xa qu¸, quay l¹i "..x.."/"..y.."!")
+		return 0
+	end
+	return 1
 end
