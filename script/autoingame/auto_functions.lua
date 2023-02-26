@@ -1,12 +1,15 @@
 IL("AI")
 
-count = 0
 auto_attack_enabled = 0
 
 function test_function_2()
 	-- delay count
 	if not count then
 		count = 0
+		-- get current pos when script startup
+		local w1, x1, y1 = GetWorldPos()
+		local range = 500
+		set_go_around(x1, y1, range)
 	end
 	count = mod(count+1, 18) -- 1 giay co 18 khac
 
@@ -24,8 +27,7 @@ function test_function_2()
 
 	if count == 1 then -- Delay 1 giay
 		count_sec = mod(count_sec + 1, 10) -- Timer 10 giay
-		x_cor = 193; y_cor = 204
-		auto_attack_enabled = go_to_coordinate(x_cor, y_cor)
+		auto_attack_enabled = go_to_coordinate(GetTaskTemp(1), GetTaskTemp(2), GetTaskTemp(3))
 	end
 
 	auto_switch_skills_A_and_S(count)
@@ -64,13 +66,22 @@ function auto_switch_skills_A_and_S(timer_count)
 	end
 end
 
-function go_to_coordinate(x, y)
-	SetOriginPos(x*8*32, y*16*32)
-	SetActiveRange(500)
+function go_to_coordinate(x8, y16, range)
+	SetOriginPos(x8*32, y16*32)
+	SetActiveRange(range)
 	if (KeepActiveRange() == 1) then
 		SetTarget(0)
-		NpcChat(GetSelfIndex(), "Xa qu∏, quay lπi "..x.."/"..y.."!")
+		NpcChat(GetSelfIndex(), "Xa qu∏, quay lπi "..floor(x8/8).."/"..floor(y16/16)..": "..range)
 		return 0
 	end
 	return 1
+end
+
+function set_go_around(x8, y16, range)
+	SetOriginPos(x8*32, y16*32)
+	SetActiveRange(range)
+	SetTaskTemp(1, x8) -- store global 1
+	SetTaskTemp(2, y16) -- store global 2
+	SetTaskTemp(3, range) -- store global 3
+	Msg2Player("Quanh Æi”m <color=yellow>"..floor(x8/8).."/"..floor(y16/16)..": "..range)
 end
