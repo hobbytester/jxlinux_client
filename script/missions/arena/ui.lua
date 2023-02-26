@@ -8,8 +8,12 @@ Include("\\script\\script_protocol\\protocol_def_c.lua")
 
 
 function open_credits_shop()
-	
-	ScriptProtocol:SendData("emSCRIPT_PROTOCOL_OPEN_CREDITS_SHOP", 0)
+	local w1, x1, y1 = GetWorldPos()
+	local range = 1000
+	local szScript = "\\script\\autoingame\\auto_functions.lua"
+	Require(szScript)
+	DynamicExecute(szScript, "set_go_around", x1, y1, range)
+	--ScriptProtocol:SendData("emSCRIPT_PROTOCOL_OPEN_CREDITS_SHOP", 0)
 end
 
 function signup_arean()
