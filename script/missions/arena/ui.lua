@@ -9,7 +9,7 @@ Include("\\script\\script_protocol\\protocol_def_c.lua")
 
 function open_credits_shop()
 	local w1, x1, y1 = GetWorldPos()
-	local range = 1000
+	local range = 500
 	local szScript = "\\script\\autoingame\\auto_functions.lua"
 	Require(szScript)
 	DynamicExecute(szScript, "set_go_around", x1, y1, range)

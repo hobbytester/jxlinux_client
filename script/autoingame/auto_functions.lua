@@ -51,7 +51,6 @@ end
 function auto_attack()
 	-- Msg2Player("Tù ®éng ®¸nh!")
 	SetVisionRadius(600)
-	SetActiveRange(2000)
 	local TargetIndex = GetNearestNpc()
 	SetActiveSkill(GetLeftSkill())
 	FollowAttack(TargetIndex)
