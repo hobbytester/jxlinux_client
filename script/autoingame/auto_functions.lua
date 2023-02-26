@@ -10,6 +10,10 @@ function test_function_2()
 	end
 	count = mod(count+1, 18) -- 1 giay co 18 khac
 
+	if not count_sec then
+		count_sec = 0
+	end
+
 	-- moi giay check mana neu nho hon 20% thi bom
 	if AI_GetManaPercent() < 20 then
 		if count == 1 then
@@ -19,12 +23,19 @@ function test_function_2()
 	end
 
 	if count == 1 then -- Delay 1 giay
+		count_sec = mod(count_sec + 1, 10) -- Timer 10 giay
 		x_cor = 193; y_cor = 204
 		auto_attack_enabled = go_to_coordinate(x_cor, y_cor)
 	end
 
 	auto_switch_skills_A_and_S(count)
 	if auto_attack_enabled == 1 then
+		if count_sec == 1 then -- action ngay lap tuc 0-119
+			-- SetTarget(0) -- truoc khi buff 0.5s ???
+			DoAttack(150, GetSelfIndex()) -- DoAttack(<ID_SKILL> 150: Tran phai ThienNhan)
+			return -- cancel this function - -- issue: double buff due to count_sec is not updated yet
+		end
+
 		auto_attack()
 	end
 end
