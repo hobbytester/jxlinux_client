@@ -1,6 +1,7 @@
 IL("AI")
 
 count = 0
+auto_attack_enabled = 0
 
 function test_function_2()
 	-- delay count
@@ -17,7 +18,6 @@ function test_function_2()
 		end
 	end
 
-	attack_enabled = 0
 	if count == 1 then -- Delay 1 giay
 		-- Danh quanh diem
 		x_cor = 193
@@ -25,15 +25,16 @@ function test_function_2()
 		SetOriginPos(x_cor*8*32, y_cor*16*32)
 		SetActiveRange(500)
 		if (KeepActiveRange() == 1) then
+			auto_attack_enabled = 0
 			SetTarget(0)
 			NpcChat(GetSelfIndex(), "Xa qu¸, quay l¹i!")
 		else
-			attack_enabled = 1
+			auto_attack_enabled = 1
 		end
 	end
 
 	auto_switch_skills_A_and_S(count)
-	if attack_enabled == 1 then
+	if auto_attack_enabled == 1 then
 		auto_attack()
 	end
 end
