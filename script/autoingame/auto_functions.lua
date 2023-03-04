@@ -1,5 +1,29 @@
 IL("AI")
 
+AI_FPS = 18;
+AI_MAXTIME = 5 * 60 * AI_FPS;
+AI_REPORTTIME = 2 * 60 * AI_FPS;
+AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
+
+ai_totaltime = 0
+report_count = 0
+assist_count = 0
+
+function auto_main()
+	ai_totaltime = mod(ai_totaltime + 1, AI_MAXTIME);
+
+	if (mod(ai_totaltime,  AI_REPORTTIME) == 0) then
+		report_count = report_count + 1;
+		Msg2Player("§©y lµ b¸o c¸o lÇn <color=yellow>"..report_count);
+	end
+
+	if (mod(ai_totaltime, AI_ASSISTSKILLTIME) == 0) then
+		assist_count = assist_count + 1;
+		NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..assist_count);
+		DoAttack(GetRightSkill(), GetSelfIndex());
+	end
+end
+
 auto_attack_enabled = 0
 
 function test_function_2()
