@@ -4,7 +4,7 @@ AI_FPS = 18;
 AI_MAXTIME = 5 * 60 * AI_FPS;
 AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
 AI_ONE_SEC = 1 * AI_FPS;
-AI_ATTACK_TIME = 3 * AI_FPS;
+AI_ATTACK_TIME = 5 * AI_FPS;
 
 g_total_time = 0;
 g_sleep_time = 0;
@@ -14,7 +14,7 @@ g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
 
 g_target_index = 0;
-g_ai_state = AI_STATE_FREE;
+g_ai_state = 0;
 AI_STATE_FREE = 0;
 AI_STATE_ATTACK = 1;
 
@@ -24,6 +24,7 @@ AI_NPC_LIFE_PRECENT = 100;
 g_ai_attack_time = 0;
 g_npc_last_life_precent = AI_NPC_LIFE_PRECENT;
 
+g_ai_ignore_npc_tab = {};
 
 function debug_msg(str)
 	--NpcChat(GetSelfIndex(), str);
@@ -90,7 +91,7 @@ function auto_main()
 	end
 
 	if (g_ai_state == AI_STATE_FREE) then
-		g_target_index = GetNearestNpc(); --auto_get_next_npc();
+		g_target_index = auto_get_next_npc(); -- GetNearestNpc();
 		SetTarget(g_target_index);
 		if (g_target_index > 0) then
 			g_ai_state = AI_STATE_ATTACK;
@@ -163,9 +164,14 @@ function auto_get_next_npc()
 		if (npc_index <=  0) then
 			break
 		end
-		g_str_dbg = g_str_dbg..":Npc["..npc_index.."]";
-		return npc_index;
+
+		ignore_index = auto_find_ignore_npc(GetCNpcId(npc_index));
+		if (ignore_index == 0) then
+			g_ai_ignore_npc_tab = {};
+			break
+		end
 	end
+
 	g_str_dbg = g_str_dbg..":Npc["..npc_index.."]";
 	return npc_index;
 end
@@ -194,7 +200,7 @@ function auto_try_attack(target_index)
 			NpcChat(GetSelfIndex(), "Ti’p tÙc Æ∏nh Npc["..target_index.."] <color=red>"..npc_life_precent.."%<color>");
 		else
 			NpcChat(GetSelfIndex(), "Npc["..target_index.."] <color=cyan>bﬁ lag<color>! "..g_npc_last_life_precent.."% vs "..npc_life_precent.."%");
-			-- Add missed NPC --
+			auto_add_ignore_npc(GetCNpcId(target_index));
 			g_ai_state = AI_STATE_FREE;
 			return
 		end
@@ -206,6 +212,25 @@ function auto_do_attack(target_index)
 	SetVisionRadius(1200);
 	SetActiveSkill(GetLeftSkill());
 	FollowAttack(target_index);
+end
+
+function auto_add_ignore_npc(npc_id)
+	index = auto_find_ignore_npc(npc_id);
+	if (index == 0) then
+		g_ai_ignore_npc_tab[getn(g_ai_ignore_npc_tab) + 1] = npc_id;
+		Msg2Player("Ignore new NpcId("..npc_id..")");
+	else
+		Msg2Player("Already ingore NpcId("..npc_id..")");
+	end
+end
+
+function auto_find_ignore_npc(npc_id)
+	for i = 1, getn(g_ai_ignore_npc_tab) do
+		if (npc_id == g_ai_ignore_npc_tab[i]) then
+			return i;
+		end
+	end
+	return 0;
 end
 
 auto_attack_enabled = 0
