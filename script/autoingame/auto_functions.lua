@@ -17,6 +17,8 @@ g_ai_state = 0;
 AI_STATE_FREE = 0;
 AI_STATE_ATTACK = 1;
 
+g_stay_around = 0; -- {0: disable, 1: enable}
+
 function debug_msg(str)
 	NpcChat(GetSelfIndex(), str);
 	--Msg2Player(str);
@@ -61,13 +63,15 @@ function auto_main()
 		end
 	end
 
-	SetActiveRange(1000);
-	if (KeepActiveRange() == 1) then
-		g_str_dbg = g_str_dbg..":Di chuy”n";
-		g_target_index = 0;
-		SetTarget(g_target_index);
-		debug_msg(g_str_dbg);
-		return
+	SetActiveRange(2000);
+	if (g_stay_around == 1) then
+		if (KeepActiveRange() == 1) then
+			g_str_dbg = g_str_dbg..":Xa qu∏, quay lπi!";
+			g_target_index = 0;
+			SetTarget(g_target_index);
+			debug_msg(g_str_dbg);
+			return
+		end
 	end
 
 	if (g_ai_state == AI_STATE_FREE) then
@@ -130,15 +134,17 @@ function auto_reset_use_mana_potion_delay()
 end
 
 function auto_get_next_npc()
-	npc_index = 0;
+	npc_id = 0;
 	for i = 1, 10 do
-		npc_index = GetNextNpc(i);
-		if (npc_index <=  0) then
+		npc_id = GetNextNpc(i);
+		if (npc_id <=  0) then
 			break
 		end
-		return npc_index;
+		g_str_dbg = g_str_dbg..":Npc["..npc_id.."]";
+		return npc_id;
 	end
-	return npc_index;
+	g_str_dbg = g_str_dbg..":Npc["..npc_id.."]";
+	return npc_id;
 end
 
 function auto_attack_target(target_index)
@@ -146,7 +152,7 @@ function auto_attack_target(target_index)
 	if (npc_id == 0) then
 		g_ai_state = AI_STATE_FREE;
 	else
-		g_str_dbg = g_str_dbg..":Attack["..target_index.."]["..npc_id.."]";
+		g_str_dbg = g_str_dbg..":Npc["..npc_id.."]:Attack["..target_index.."]";
 		auto_do_attack(target_index);
 	end
 end
