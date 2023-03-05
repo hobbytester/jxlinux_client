@@ -9,8 +9,14 @@ ai_totaltime = 0
 report_count = 0
 assist_count = 0
 
+function debug_msg(str)
+	--NpcChat(GetSelfIndex(), str);
+	Msg2Player(str)
+end
+
 function auto_main()
 	ai_totaltime = mod(ai_totaltime + 1, AI_MAXTIME);
+	dbg_str = "Debug"
 
 	if (mod(ai_totaltime,  AI_REPORTTIME) == 0) then
 		report_count = report_count + 1;
@@ -21,6 +27,9 @@ function auto_main()
 		assist_count = assist_count + 1;
 		NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..assist_count);
 		DoAttack(GetRightSkill(), GetSelfIndex());
+		dbg_str = dbg_str..":AssistSkill"
+		debug_msg(dbg_str)
+		return
 	end
 end
 
