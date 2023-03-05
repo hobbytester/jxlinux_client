@@ -8,6 +8,8 @@ AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
 g_total_time = 0;
 g_report_count = 0;
 g_assist_count = 0;
+g_use_life_potion_delay = 4;
+g_use_mana_potion_delay = 4;
 
 function debug_msg(str)
 	--NpcChat(GetSelfIndex(), str);
@@ -32,7 +34,67 @@ function auto_main()
 		debug_msg(g_str_dbg);
 		return
 	end
+
+	life_percent = AI_GetLifePercent();
+	if (life_percent < 30) then
+		auto_return_to_town();
+	elseif (life_percent < 70) then
+		if (g_use_life_potion_delay > 0) then
+			g_use_life_potion_delay = auto_next_delay(g_use_life_potion_delay);
+		else
+			auto_use_life_potion();
+			auto_reset_use_life_potion_delay();
+		end
+	end
+	if (AI_GetManaPercent() < 40) then
+		if (g_use_mana_potion_delay > 0) then
+			g_use_mana_potion_delay = auto_next_delay(g_use_mana_potion_delay);
+		else
+			auto_use_mana_potion();
+			auto_reset_use_mana_potion_delay();
+		end
+	end
 end
+
+function auto_use_life_potion()
+	if (Eat(1) == 0) then
+		auto_return_to_town();
+		Msg2Player("HÕt b×nh sinh lùc!");
+		return
+	else
+		Msg2Player("Håi sinh lùc")
+	end
+end
+
+function auto_use_mana_potion()
+	if (Eat(2) == 0) then
+		NpcChat(GetSelfIndex(), "HÕt néi lùc råi ®¹i hiÖp ¬i!");
+		return
+	else
+		Msg2Player("Håi néi lùc");
+	end
+end
+
+function auto_return_to_town()
+	ReturnCity(); -- TODO: not working
+	Msg2Player("Nguy hiÓm! Trë vÒ thµnh.");
+end
+
+function auto_next_delay(delay)
+	if (delay > 0) then
+		return (delay - 1);
+	end
+	return 0;
+end
+
+function auto_reset_use_life_potion_delay()
+	g_use_life_potion_delay = 12;
+end
+
+function auto_reset_use_mana_potion_delay()
+	g_use_mana_potion_delay = 18;
+end
+
 
 auto_attack_enabled = 0
 
