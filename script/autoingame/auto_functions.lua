@@ -4,6 +4,7 @@ AI_FPS = 18;
 AI_MAXTIME = 5 * 60 * AI_FPS;
 AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
 AI_ONE_SEC = 1 * AI_FPS;
+AI_ATTACK_TIME = 3 * AI_FPS;
 
 g_total_time = 0;
 g_sleep_time = 0;
@@ -18,6 +19,11 @@ AI_STATE_FREE = 0;
 AI_STATE_ATTACK = 1;
 
 g_stay_around = 0; -- {0: disable, 1: enable}
+
+AI_NPC_LIFE_PRECENT = 100;
+g_ai_attack_time = 0;
+g_npc_last_life_precent = AI_NPC_LIFE_PRECENT;
+
 
 function debug_msg(str)
 	--NpcChat(GetSelfIndex(), str);
@@ -84,10 +90,11 @@ function auto_main()
 	end
 
 	if (g_ai_state == AI_STATE_FREE) then
-		g_target_index = auto_get_next_npc();
+		g_target_index = GetNearestNpc(); --auto_get_next_npc();
 		SetTarget(g_target_index);
 		if (g_target_index > 0) then
 			g_ai_state = AI_STATE_ATTACK;
+			g_ai_attack_time = AI_ATTACK_TIME;
 		else
 			g_str_dbg = g_str_dbg..":Ngåi ®îi";
 			Sit();
@@ -169,12 +176,34 @@ function auto_attack_target(target_index)
 		g_ai_state = AI_STATE_FREE;
 	else
 		g_str_dbg = g_str_dbg..":Npc["..npc_id.."]:Attack["..target_index.."]";
-		auto_do_attack(target_index);
+		auto_try_attack(target_index);
 	end
 end
 
+function auto_try_attack(target_index)
+	g_ai_attack_time = g_ai_attack_time - 1;
+	if (g_ai_attack_time <= 0) then
+		local npc_life_precent = AI_GetLifePercent(target_index);
+		if (g_npc_last_life_precent ~= npc_life_precent) then
+			if npc_life_precent == 0 then
+				g_npc_last_life_precent = AI_NPC_LIFE_PRECENT;
+			else
+				g_npc_last_life_precent = npc_life_precent;
+			end
+			g_ai_attack_time = AI_ATTACK_TIME;
+			NpcChat(GetSelfIndex(), "TiÕp tôc ®¸nh Npc["..target_index.."] <color=red>"..npc_life_precent.."%<color>");
+		else
+			NpcChat(GetSelfIndex(), "Npc["..target_index.."] <color=cyan>bÞ lag<color>! "..g_npc_last_life_precent.."% vs "..npc_life_precent.."%");
+			-- Add missed NPC --
+			g_ai_state = AI_STATE_FREE;
+			return
+		end
+	end
+	auto_do_attack(target_index);
+end
+
 function auto_do_attack(target_index)
-	SetVisionRadius(600);
+	SetVisionRadius(1200);
 	SetActiveSkill(GetLeftSkill());
 	FollowAttack(target_index);
 end
