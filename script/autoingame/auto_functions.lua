@@ -4,6 +4,7 @@ AI_FPS = 18;
 AI_MAXTIME = 5 * 60 * AI_FPS;
 AI_REPORTTIME = 2 * 60 * AI_FPS;
 AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
+AI_ONE_SEC = 1 * AI_FPS;
 
 g_total_time = 0;
 g_report_count = 0;
@@ -17,14 +18,14 @@ AI_STATE_FREE = 0;
 AI_STATE_ATTACK = 1;
 
 function debug_msg(str)
-	--NpcChat(GetSelfIndex(), str);
-	Msg2Player(str);
+	NpcChat(GetSelfIndex(), str);
+	--Msg2Player(str);
 end
 
 g_str_dbg = "";
 function auto_main()
 	g_total_time = mod(g_total_time + 1, AI_MAXTIME);
-	g_str_dbg = "Debug";
+	g_str_dbg = "["..floor(g_total_time/AI_FPS).."]";
 
 	if (mod(g_total_time,  AI_REPORTTIME) == 0) then
 		g_report_count = g_report_count + 1;
@@ -82,6 +83,10 @@ function auto_main()
 
 	if (g_ai_state == AI_STATE_ATTACK) then
 		auto_attack_target(g_target_index);
+	end
+
+	if (mod(g_total_time,  AI_ONE_SEC) == 0) then
+		debug_msg(g_str_dbg);
 	end
 end
 
