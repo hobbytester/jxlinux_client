@@ -5,30 +5,31 @@ AI_MAXTIME = 5 * 60 * AI_FPS;
 AI_REPORTTIME = 2 * 60 * AI_FPS;
 AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
 
-ai_totaltime = 0
-report_count = 0
-assist_count = 0
+g_total_time = 0;
+g_report_count = 0;
+g_assist_count = 0;
 
 function debug_msg(str)
 	--NpcChat(GetSelfIndex(), str);
-	Msg2Player(str)
+	Msg2Player(str);
 end
 
+g_str_dbg = "";
 function auto_main()
-	ai_totaltime = mod(ai_totaltime + 1, AI_MAXTIME);
-	dbg_str = "Debug"
+	g_total_time = mod(g_total_time + 1, AI_MAXTIME);
+	g_str_dbg = "Debug";
 
-	if (mod(ai_totaltime,  AI_REPORTTIME) == 0) then
-		report_count = report_count + 1;
-		Msg2Player("§©y lµ b¸o c¸o lÇn <color=yellow>"..report_count);
+	if (mod(g_total_time,  AI_REPORTTIME) == 0) then
+		g_report_count = g_report_count + 1;
+		Msg2Player("§©y lµ b¸o c¸o lÇn <color=yellow>"..g_report_count);
 	end
 
-	if (mod(ai_totaltime, AI_ASSISTSKILLTIME) == 0) then
-		assist_count = assist_count + 1;
-		NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..assist_count);
+	if (mod(g_total_time, AI_ASSISTSKILLTIME) == 0) then
+		g_assist_count = g_assist_count + 1;
+		NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..g_assist_count);
 		DoAttack(GetRightSkill(), GetSelfIndex());
-		dbg_str = dbg_str..":AssistSkill"
-		debug_msg(dbg_str)
+		g_str_dbg = g_str_dbg..":AssistSkill";
+		debug_msg(g_str_dbg);
 		return
 	end
 end
