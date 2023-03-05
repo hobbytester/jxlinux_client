@@ -11,6 +11,11 @@ g_assist_count = 0;
 g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
 
+g_target_index = 0;
+g_ai_state = 0;
+AI_STATE_FREE = 0;
+AI_STATE_ATTACK = 1;
+
 function debug_msg(str)
 	--NpcChat(GetSelfIndex(), str);
 	Msg2Player(str);
@@ -54,6 +59,30 @@ function auto_main()
 			auto_reset_use_mana_potion_delay();
 		end
 	end
+
+	SetActiveRange(1000);
+	if (KeepActiveRange() == 1) then
+		g_str_dbg = g_str_dbg..":Di chuyÓn";
+		g_target_index = 0;
+		SetTarget(g_target_index);
+		debug_msg(g_str_dbg);
+		return
+	end
+
+	if (g_ai_state == AI_STATE_FREE) then
+		g_target_index = auto_get_next_npc();
+		SetTarget(g_target_index);
+		if (g_target_index > 0) then
+			g_ai_state = AI_STATE_ATTACK;
+		else
+			g_str_dbg = g_str_dbg..":Ngåi ®îi";
+			Sit();
+		end
+	end
+
+	if (g_ai_state == AI_STATE_ATTACK) then
+		auto_attack_target(g_target_index);
+	end
 end
 
 function auto_use_life_potion()
@@ -95,6 +124,33 @@ function auto_reset_use_mana_potion_delay()
 	g_use_mana_potion_delay = 18;
 end
 
+function auto_get_next_npc()
+	npc_index = 0;
+	for i = 1, 10 do
+		npc_index = GetNextNpc(i);
+		if (npc_index <=  0) then
+			break
+		end
+		return npc_index;
+	end
+	return npc_index;
+end
+
+function auto_attack_target(target_index)
+	npc_id = GetCNpcId(target_index);
+	if (npc_id == 0) then
+		g_ai_state = AI_STATE_FREE;
+	else
+		g_str_dbg = g_str_dbg..":Attack["..target_index.."]["..npc_id.."]";
+		auto_do_attack(target_index);
+	end
+end
+
+function auto_do_attack(target_index)
+	SetVisionRadius(600);
+	SetActiveSkill(GetLeftSkill());
+	FollowAttack(target_index);
+end
 
 auto_attack_enabled = 0
 
