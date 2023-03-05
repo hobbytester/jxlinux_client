@@ -14,7 +14,7 @@ g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
 
 g_target_index = 0;
-g_ai_state = 0;
+g_ai_state = AI_STATE_FREE;
 AI_STATE_FREE = 0;
 AI_STATE_ATTACK = 1;
 
@@ -35,7 +35,7 @@ function auto_main()
 	g_total_time = mod(g_total_time + 1, AI_MAXTIME);
 	g_str_dbg = "["..floor(g_total_time/AI_FPS).."]";
 
-	SetVisionRadius(600); -- Need to set before GetNextNpc() and GetNearestNpc()
+	SetVisionRadius(1200); -- Need to set before GetNextNpc() and GetNearestNpc()
 	SetActiveRange(2000);
 
 	if (g_sleep_time > 0) then
@@ -157,17 +157,17 @@ function auto_reset_use_mana_potion_delay()
 end
 
 function auto_get_next_npc()
-	npc_id = 0;
+	npc_index = 0;
 	for i = 1, 10 do
-		npc_id = GetNextNpc(i);
-		if (npc_id <=  0) then
+		npc_index = GetNextNpc(i);
+		if (npc_index <=  0) then
 			break
 		end
-		g_str_dbg = g_str_dbg..":Npc["..npc_id.."]";
-		return npc_id;
+		g_str_dbg = g_str_dbg..":Npc["..npc_index.."]";
+		return npc_index;
 	end
-	g_str_dbg = g_str_dbg..":Npc["..npc_id.."]";
-	return npc_id;
+	g_str_dbg = g_str_dbg..":Npc["..npc_index.."]";
+	return npc_index;
 end
 
 function auto_attack_target(target_index)
@@ -175,7 +175,7 @@ function auto_attack_target(target_index)
 	if (npc_id == 0) then
 		g_ai_state = AI_STATE_FREE;
 	else
-		g_str_dbg = g_str_dbg..":Npc["..npc_id.."]:Attack["..target_index.."]";
+		g_str_dbg = g_str_dbg..":NpcId("..npc_id.."):Attack["..target_index.."]";
 		auto_try_attack(target_index);
 	end
 end
