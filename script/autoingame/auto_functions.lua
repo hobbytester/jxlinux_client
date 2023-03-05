@@ -29,6 +29,9 @@ function auto_main()
 	g_total_time = mod(g_total_time + 1, AI_MAXTIME);
 	g_str_dbg = "["..floor(g_total_time/AI_FPS).."]";
 
+	SetVisionRadius(600); -- Need to set before GetNextNpc() and GetNearestNpc()
+	SetActiveRange(2000);
+
 	if (g_sleep_time > 0) then
 		g_sleep_time = g_sleep_time - 1;
 		return
@@ -70,7 +73,6 @@ function auto_main()
 		end
 	end
 
-	SetActiveRange(2000);
 	if (g_stay_around == 1) then
 		if (KeepActiveRange() == 1) then
 			g_str_dbg = g_str_dbg..":Xa qu¸, quay l¹i!";
