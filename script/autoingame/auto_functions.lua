@@ -2,12 +2,12 @@ IL("AI")
 
 AI_FPS = 18;
 AI_MAXTIME = 5 * 60 * AI_FPS;
-AI_REPORTTIME = 2 * 60 * AI_FPS;
 AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
 AI_ONE_SEC = 1 * AI_FPS;
 
 g_total_time = 0;
-g_report_count = 0;
+g_sleep_time = 0;
+g_do_assist = 0;
 g_assist_count = 0;
 g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
@@ -20,8 +20,8 @@ AI_STATE_ATTACK = 1;
 g_stay_around = 0; -- {0: disable, 1: enable}
 
 function debug_msg(str)
-	NpcChat(GetSelfIndex(), str);
-	--Msg2Player(str);
+	--NpcChat(GetSelfIndex(), str);
+	Msg2Player(str);
 end
 
 g_str_dbg = "";
@@ -29,16 +29,23 @@ function auto_main()
 	g_total_time = mod(g_total_time + 1, AI_MAXTIME);
 	g_str_dbg = "["..floor(g_total_time/AI_FPS).."]";
 
-	if (mod(g_total_time,  AI_REPORTTIME) == 0) then
-		g_report_count = g_report_count + 1;
-		Msg2Player("§©y lµ b¸o c¸o lÇn <color=yellow>"..g_report_count);
+	if (g_sleep_time > 0) then
+		g_sleep_time = g_sleep_time - 1;
+		return
+	end
+
+	if (g_do_assist == 1) then
+		g_do_assist = 0;
+		auto_do_right_skill();
+		debug_msg(g_str_dbg);
+		return
 	end
 
 	if (mod(g_total_time, AI_ASSISTSKILLTIME) == 0) then
-		g_assist_count = g_assist_count + 1;
-		NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..g_assist_count);
-		DoAttack(GetRightSkill(), GetSelfIndex());
-		g_str_dbg = g_str_dbg..":AssistSkill";
+		SetTarget(0);
+		g_do_assist = 1;
+		g_sleep_time = 0.6 * AI_ONE_SEC; -- Need to stop 0.6s before do right skill
+		g_str_dbg = g_str_dbg..":sleep("..g_sleep_time.." frames)";
 		debug_msg(g_str_dbg);
 		return
 	end
@@ -92,6 +99,13 @@ function auto_main()
 	if (mod(g_total_time,  AI_ONE_SEC) == 0) then
 		debug_msg(g_str_dbg);
 	end
+end
+
+function auto_do_right_skill()
+	g_assist_count = g_assist_count + 1;
+	NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..g_assist_count);
+	DoAttack(GetRightSkill(), GetSelfIndex());
+	g_str_dbg = g_str_dbg..":RightSkill";
 end
 
 function auto_use_life_potion()
