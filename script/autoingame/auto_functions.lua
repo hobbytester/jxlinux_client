@@ -97,6 +97,7 @@ function auto_main()
 			g_ai_state = AI_STATE_ATTACK;
 			g_ai_attack_time = AI_ATTACK_TIME;
 		else
+			auto_clear_ignore_npc(); -- No more NPC left
 			g_str_dbg = g_str_dbg..":Ngåi ®îi";
 			Sit();
 		end
@@ -167,7 +168,7 @@ function auto_get_next_npc()
 
 		ignore_index = auto_find_ignore_npc(GetCNpcId(npc_index));
 		if (ignore_index == 0) then
-			g_ai_ignore_npc_tab = {};
+			auto_clear_ignore_npc();
 			break
 		end
 	end
@@ -231,6 +232,10 @@ function auto_find_ignore_npc(npc_id)
 		end
 	end
 	return 0;
+end
+
+function auto_clear_ignore_npc()
+	g_ai_ignore_npc_tab = {};
 end
 
 auto_attack_enabled = 0
