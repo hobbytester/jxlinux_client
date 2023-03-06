@@ -8,7 +8,7 @@ AI_ATTACK_TIME = 5 * AI_FPS;
 
 g_total_time = 0;
 g_sleep_time = 0;
-g_do_assist = 0;
+g_do_assist = 1; -- Do immediately when the Auto startup
 g_assist_count = 0;
 g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
