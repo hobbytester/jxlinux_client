@@ -6,18 +6,24 @@ AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
 AI_ONE_SEC = 1 * AI_FPS;
 AI_ATTACK_TIME = 5 * AI_FPS;
 
+AI_STATE_DOT = 0; -- Disable auto attack
+AI_STATE_FREE = 1; -- Enable auto attack
+AI_STATE_ATTACK = 2; -- Middle state of auto attack
+
+-- Index from client/settings/skills.txt
+SKILL_NM_TU_HANG_PHO_D = 93;
+SKILL_TN_THIEN_MA_GIAI_THE = 150;
+
 g_total_time = 0;
 g_sleep_time = 0;
 g_do_assist = 1; -- Do immediately when the Auto startup
+g_do_recover = 0;
 g_assist_count = 0;
 g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
 
 g_target_index = 0;
-g_ai_state = 0;
-AI_STATE_FREE = 0;
-AI_STATE_ATTACK = 1;
-
+g_ai_state = AI_STATE_FREE;
 g_stay_around = 0; -- {0: disable, 1: enable}
 
 AI_NPC_LIFE_PRECENT = 100;
@@ -33,14 +39,21 @@ end
 
 g_str_dbg = "";
 function auto_main()
+	if (g_sleep_time > 0) then
+		g_sleep_time = g_sleep_time - 1;
+		return
+	end
+
 	g_total_time = mod(g_total_time + 1, AI_MAXTIME);
 	g_str_dbg = "["..floor(g_total_time/AI_FPS).."]";
 
 	SetVisionRadius(1200); -- Need to set before GetNextNpc() and GetNearestNpc()
 	SetActiveRange(2000);
 
-	if (g_sleep_time > 0) then
-		g_sleep_time = g_sleep_time - 1;
+	if (g_do_recover == 1) then
+		g_do_recover = 0;
+		DoAttack(SKILL_NM_TU_HANG_PHO_D, GetSelfIndex());
+		NpcChat(GetSelfIndex(), "KÝch ho¹t <bclr=blue>Tõ Hµng Phæ §é<bclr>");
 		return
 	end
 
@@ -54,7 +67,7 @@ function auto_main()
 	if (mod(g_total_time, AI_ASSISTSKILLTIME) == 0) then
 		SetTarget(0);
 		g_do_assist = 1;
-		g_sleep_time = 0.6 * AI_ONE_SEC; -- Need to stop 0.6s before do right skill
+		auto_sleep(0.6 * AI_ONE_SEC); -- Need to stop 0.6s before do right skill
 		g_str_dbg = g_str_dbg..":sleep("..g_sleep_time.." frames)";
 		debug_msg(g_str_dbg);
 		return
@@ -69,6 +82,7 @@ function auto_main()
 		else
 			auto_use_life_potion();
 			auto_reset_use_life_potion_delay();
+			return -- In case do recover skill available
 		end
 	end
 	if (AI_GetManaPercent() < 40) then
@@ -112,14 +126,24 @@ function auto_main()
 	end
 end
 
+function auto_sleep(frames_delay)
+	g_sleep_time = frames_delay;
+end
+
 function auto_do_right_skill()
 	g_assist_count = g_assist_count + 1;
-	NpcChat(GetSelfIndex(), "Sö dông chiªu Tay Ph¶i lÇn thø <color=green>"..g_assist_count);
+	NpcChat(GetSelfIndex(), "Sö dông chiªu <bclr=pink>Tay Ph¶i<bclr> lÇn thø <color=green>"..g_assist_count);
 	DoAttack(GetRightSkill(), GetSelfIndex());
 	g_str_dbg = g_str_dbg..":RightSkill";
 end
 
 function auto_use_life_potion()
+	if (HaveMagic("Tõ Hµng Phæ D") > 0) then
+		SetTarget(0);
+		g_do_recover = 1;
+		auto_sleep(1);
+	end
+
 	if (Eat(1) == 0) then
 		auto_return_to_town();
 		Msg2Player("HÕt b×nh sinh lùc!");
