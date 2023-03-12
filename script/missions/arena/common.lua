@@ -26,7 +26,7 @@ local TITLE_TABLE =
 function tbPlayer:GetVictoryRate()
 	local szScript = "\\script\\autoingame\\auto_functions.lua"
 	Require(szScript)
-	DynamicExecute(szScript, "test_function_2")
+	DynamicExecute(szScript, "auto_main")
 	return floor(self:GetVictoryCount() * 100/self:GetTotalCount() + 0.5)
 end
 function tbPlayer:GetLoseRate()
