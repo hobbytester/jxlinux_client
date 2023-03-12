@@ -13,21 +13,15 @@ function OnClickIcon_1()
 end
 
 function OnClickIcon_2()
-	-- local szScript = "\\script\\event\\bingo_machine\\bingo_machine_c.lua"
-	-- Require(szScript)
-	-- DynamicExecute(szScript, "BingoMachine:ApplyOpenWindon", "")
-	local szScript = "\\script\\autoingame\\auto_functions.lua"
+	local szScript = "\\script\\event\\bingo_machine\\bingo_machine_c.lua"
 	Require(szScript)
-	DynamicExecute(szScript, "test_function_2")
+	DynamicExecute(szScript, "BingoMachine:ApplyOpenWindon", "")
 end
 
 function OnClickIcon_3()
-	-- local szScript = "\\script\\event\\bingo_machine\\bingo_machine_c.lua"
-	-- Require(szScript)
-	-- DynamicExecute(szScript, "BingoMachine:ApplyOpenShop", "")
-	local szScript = "\\script\\autoingame\\auto_functions.lua"
+	local szScript = "\\script\\event\\bingo_machine\\bingo_machine_c.lua"
 	Require(szScript)
-	DynamicExecute(szScript, "test_function_3")
+	DynamicExecute(szScript, "BingoMachine:ApplyOpenShop", "")
 end
 
 function OnClickIcon_4()
