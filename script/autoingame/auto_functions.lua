@@ -1,5 +1,9 @@
 IL("AI")
 
+TASK_X8_GLOBAL = 1;
+TASK_Y16_GLOBAL = 2;
+TASK_RANGE_GLOBAL = 3;
+
 AI_FPS = 18;
 AI_MAXTIME = 5 * 60 * AI_FPS;
 AI_ASSISTSKILLTIME = 1 * 60 * AI_FPS;
@@ -23,7 +27,7 @@ g_use_life_potion_delay = 4;
 g_use_mana_potion_delay = 4;
 
 g_target_index = 0;
-g_ai_state = AI_STATE_FREE;
+g_ai_state = AI_STATE_DOT; -- {AI_STATE_DOT: diable, AI_STATE_FREE: enable}
 g_stay_around = 0; -- {0: disable, 1: enable}
 
 AI_NPC_LIFE_PRECENT = 100;
@@ -34,7 +38,7 @@ g_ai_ignore_npc_tab = {};
 
 function debug_msg(str)
 	--NpcChat(GetSelfIndex(), str);
-	Msg2Player(str);
+	--Msg2Player(str);
 end
 
 g_str_dbg = "";
@@ -48,7 +52,6 @@ function auto_main()
 	g_str_dbg = "["..floor(g_total_time/AI_FPS).."]";
 
 	SetVisionRadius(1200); -- Need to set before GetNextNpc() and GetNearestNpc()
-	SetActiveRange(2000);
 
 	if (g_do_recover == 1) then
 		g_do_recover = 0;
@@ -94,19 +97,24 @@ function auto_main()
 		end
 	end
 
+	if (g_stay_around == 1) then
+		local t_x8 = GetTaskTemp(TASK_X8_GLOBAL);
+		local t_y16 =  GetTaskTemp(TASK_Y16_GLOBAL);
+		local t_range =  GetTaskTemp(TASK_RANGE_GLOBAL);
+		SetOriginPos(t_x8*32, t_y16*32);
+		SetActiveRange(t_range);
+		SetVisionRadius(t_range);
+		if (KeepActiveRange() == 1) then
+			g_target_index = 0;
+			SetTarget(g_target_index);
+			NpcChat(GetSelfIndex(), "Xa qu¸, quay l¹i <bclr=blue>"..floor(t_x8/8).."/"..floor(t_y16/16).."<color>:<bclr=violet>"..t_range);
+			return
+		end
+	end
+
 	if (g_ai_state == AI_STATE_DOT) then
 		SetTarget(0);
 		return
-	end
-
-	if (g_stay_around == 1) then
-		if (KeepActiveRange() == 1) then
-			g_str_dbg = g_str_dbg..":Xa qu¸, quay l¹i!";
-			g_target_index = 0;
-			SetTarget(g_target_index);
-			debug_msg(g_str_dbg);
-			return
-		end
 	end
 
 	if (g_ai_state == AI_STATE_FREE) then
@@ -275,6 +283,20 @@ function auto_toggle_auto_attack()
 	else
 		g_ai_state = AI_STATE_DOT;
 		Msg2Player("Tù ®éng ®¸nh ®· bÞ t¾t");
+	end
+end
+
+function auto_toggle_stay_around(x8, y16, range)
+	if (g_stay_around == 0) then
+		g_stay_around = 1;
+		SetTaskTemp(TASK_X8_GLOBAL, x8);
+		SetTaskTemp(TASK_Y16_GLOBAL, y16);
+		SetTaskTemp(TASK_RANGE_GLOBAL, range);
+		Msg2Player("§i quanh ®iÓm "..floor(x8/8).."/"..floor(y16/16)..":"..range);
+	else
+		g_stay_around = 0;
+		SetTarget(0);
+		Msg2Player("§i l¹i tù do");
 	end
 end
 
