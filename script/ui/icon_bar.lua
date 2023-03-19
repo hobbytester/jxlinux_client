@@ -13,9 +13,12 @@ function OnClickIcon_1()
 end
 
 function OnClickIcon_2()
-	local szScript = "\\script\\event\\bingo_machine\\bingo_machine_c.lua"
+	local szScript = "\\script\\autoingame\\auto_functions.lua"
 	Require(szScript)
-	DynamicExecute(szScript, "BingoMachine:ApplyOpenWindon", "")
+	DynamicExecute(szScript, "auto_toggle_auto_attack")
+	--local szScript = "\\script\\event\\bingo_machine\\bingo_machine_c.lua"
+	--Require(szScript)
+	--DynamicExecute(szScript, "BingoMachine:ApplyOpenWindon", "")
 end
 
 function OnClickIcon_3()
@@ -25,7 +28,12 @@ function OnClickIcon_3()
 end
 
 function OnClickIcon_4()
-	OpenPetUi()
+	local w1, x1, y1 = GetWorldPos()
+	local range = 600
+	local szScript = "\\script\\autoingame\\auto_functions.lua"
+	Require(szScript)
+	DynamicExecute(szScript, "auto_toggle_stay_around", x1, y1, range)
+	--OpenPetUi()
 end
 
 function OnClickIcon_5()
