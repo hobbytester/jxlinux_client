@@ -94,6 +94,11 @@ function auto_main()
 		end
 	end
 
+	if (g_ai_state == AI_STATE_DOT) then
+		SetTarget(0);
+		return
+	end
+
 	if (g_stay_around == 1) then
 		if (KeepActiveRange() == 1) then
 			g_str_dbg = g_str_dbg..":Xa qu¸, quay l¹i!";
@@ -260,6 +265,17 @@ end
 
 function auto_clear_ignore_npc()
 	g_ai_ignore_npc_tab = {};
+end
+
+function auto_toggle_auto_attack()
+	SetTarget(0);
+	if (g_ai_state == AI_STATE_DOT) then
+		g_ai_state = AI_STATE_FREE;
+		Msg2Player("BËt tù ®éng ®¸nh!!!");
+	else
+		g_ai_state = AI_STATE_DOT;
+		Msg2Player("Tù ®éng ®¸nh ®· bÞ t¾t");
+	end
 end
 
 auto_attack_enabled = 0
